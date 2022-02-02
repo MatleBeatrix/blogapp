@@ -27,16 +27,73 @@ const dummyPosts = [
 ];
 */
 
+function Post({item, remove, update}){
+  const [newTitle, setNewTitle] = useState("");
+  const [newContent, setNewContent] = useState("");
+
+  return (
+    <div key={item.id}>
+      <h2>{item.title}</h2>
+      <p>{item.postText}</p>
+      <p>{item.date.toLocaleString()}</p>
+      <input onChange={(event)=> setNewTitle(event.target.value)} value={newTitle} type="text" placeholder='New post title'/>
+      <input onChange={(event)=> setNewContent(event.target.value)} value={newContent} type="text" placeholder='New post text'/>
+      <button onClick={() => update(item.id, newTitle, newContent )}>Update</button>
+      <button onClick={() => remove(item.id)}>Delete</button>
+    </div>
+  )
+  
+}
+
 function App() {
 
   const [posts, setPosts] = useState([]);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+
+  //const [newTitle, setNewTitle] = useState("");
+  //const [newContent, setNewContent] = useState("");
 
   function add() {
     setPosts([...posts,{
-      title: "Cím5", 
-      postText:"Szöveg5",
-      date:"2022.02.05"
-    }])
+      title: title, 
+      postText: content,
+      date: new Date(),
+      id: Math.random()
+    }]);
+    setTitle("");
+    setContent("");
+  }
+
+  function remove(id){
+    //HOSSZABB MEGOLDÁS
+    /*
+    const newLists = [];
+    for (const p of posts) {
+      if (p.id !== id){
+        newLists.push(p);
+      }
+    }
+    setPosts(newLists);
+    */
+    
+    //RÖVIDEBB MEGOLDÁS
+    setPosts(posts.filter((p) => p.id !== id));
+  }
+
+  function update(id, newTitle, newContent){
+    const newLists = [];
+    for (let p of posts) {
+      if (p.id === id){
+        p.title = newTitle;
+        p.postText = newContent;
+      }
+      newLists.push(p);
+    }
+
+
+    setPosts(newLists);
+
   }
 
   return (
@@ -44,23 +101,26 @@ function App() {
       <h1>Blog Posts</h1>
 
       <div>
-        <input type="text" name="title" placeholder='title'/>
-        <input type="text" name="post" placeholder='post'/>
+        <input onChange={(event)=> setTitle(event.target.value)} value={title} type="text" name="title" placeholder='title'/>
+        <input onChange={(event)=> setContent(event.target.value)} value={content} type="text" name="post" placeholder='post'/>
         <button onClick={() => {add()}}>New Post</button>
         <button onClick={() => {setPosts([])}}>Delete All</button>
       </div>
 
       {posts.map((item) => {
         return (
-          <div key={item.title}>
+          /*
+          <div key={item.id}>
             <h2>{item.title}</h2>
             <p>{item.postText}</p>
-            <p>{item.date}</p>
-            <input type="text" placeholder='New post title'/>
-            <input type="text" placeholder='New post text'/>
-            <button>Update</button>
-            <button>Delete</button>
+            <p>{item.date.toLocaleString()}</p>
+            <input onChange={(event)=> setNewTitle(event.target.value)} value={newTitle} type="text" placeholder='New post title'/>
+            <input onChange={(event)=> setNewContent(event.target.value)} value={newContent} type="text" placeholder='New post text'/>
+            <button onClick={() => update(item.id)}>Update</button>
+            <button onClick={() => remove(item.id)}>Delete</button>
           </div>
+          */
+         <Post key={item.id} item={item} remove={remove} update={update} />
         )
       })}
     </div>
